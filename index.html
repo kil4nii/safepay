@@ -6,8 +6,8 @@
 <title>SafePay</title>
 <meta name="description" content="SafePay: escrow payments for businesses of any size. Prototype, no real money.">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#EDE6D3" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0A1310" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F1F1EE" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="SafePay">
@@ -16,174 +16,172 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&family=Instrument+Sans:wght@400..700&family=JetBrains+Mono:wght@400..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400..900&family=JetBrains+Mono:wght@400..600&display=swap">
 <style>
-/* Direction: "the escrow ledger" — banknote paper, engraved serif numerals, ink stamps, a dark vault panel. */
+/* Direction: neobank app. Black and white, one green accent, big rounded cards, pill buttons, a black "card" for the balance. */
 :root{
-  --bg:#EDE6D3; --surface:#FAF6EA; --sunk:#F1EAD8; --ink:#12241D; --muted:#56625A; --line:#CDC3A9;
-  --brand:#0C6B50; --brand-ink:#FAF6EA; --brand-soft:#DBEADC; --amber:#8A4703; --amber-ink:#FFF8E8; --amber-soft:#F5E1B8;
-  --danger:#A3301D; --danger-soft:#F3D8CD; --shadow:#12241D;
-  --vault:#10231C; --vault-2:#16302A; --vault-ink:#EFE8D2; --vault-muted:#A3B5A9; --vault-line:#2F4A3F; --gold:#DDAA48;
-  --code-bg:#10231C; --code-ink:#DDE5DA; --code-key:#7FD1B0; --code-str:#EBC06A;
-  --f-display:"Fraunces","Iowan Old Style","Palatino Linotype",Georgia,serif;
-  --f-body:"Instrument Sans","Segoe UI",system-ui,sans-serif;
+  --bg:#F1F1EE; --surface:#FFFFFF; --sunk:#F4F4F1; --ink:#0B0B0C; --muted:#66666C; --line:#E6E6E2;
+  --brand:#0B8A4D; --brand-ink:#FFFFFF; --brand-soft:#E3F5EA; --amber:#9A5B00; --amber-ink:#FFFFFF; --amber-soft:#FCEFD2;
+  --danger:#C7281C; --danger-soft:#FCE6E3; --shadow:rgba(11,11,12,.08);
+  --hero:#0B0B0C; --hero-2:#232326; --hero-ink:#FFFFFF; --hero-muted:#A9A9AF; --hero-line:rgba(255,255,255,.14); --mint:#5BE49B;
+  --code-bg:#0B0B0C; --code-ink:#E7E7EA; --code-key:#5BE49B; --code-str:#FFD479;
+  --f-display:"Hanken Grotesk","Segoe UI",system-ui,sans-serif;
+  --f-body:"Hanken Grotesk","Segoe UI",system-ui,sans-serif;
   --f-mono:"JetBrains Mono","Cascadia Mono",Consolas,ui-monospace,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0A1310; --surface:#111E19; --sunk:#172822; --ink:#EFE8D2; --muted:#9FB0A5; --line:#294238;
-  --brand:#4CC39A; --brand-ink:#07130E; --brand-soft:#14352A; --amber:#E6AC4E; --amber-ink:#1A1204; --amber-soft:#3A2C12;
-  --danger:#F08A73; --danger-soft:#3E1D16; --shadow:#000000;
-  --vault:#050B09; --vault-2:#0C1814; --vault-line:#25392F; --code-bg:#050B09; color-scheme:dark}}
+  --bg:#000000; --surface:#131314; --sunk:#1D1D1F; --ink:#F5F5F6; --muted:#9B9BA1; --line:#2A2A2D;
+  --brand:#5BE49B; --brand-ink:#04140B; --brand-soft:#10301F; --amber:#FFC661; --amber-ink:#1F1400; --amber-soft:#35280C;
+  --danger:#FF7A6E; --danger-soft:#3A1512; --shadow:rgba(0,0,0,.5);
+  --hero:#1B1B1D; --hero-2:#2C2C30; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0A1310; --surface:#111E19; --sunk:#172822; --ink:#EFE8D2; --muted:#9FB0A5; --line:#294238;
-  --brand:#4CC39A; --brand-ink:#07130E; --brand-soft:#14352A; --amber:#E6AC4E; --amber-ink:#1A1204; --amber-soft:#3A2C12;
-  --danger:#F08A73; --danger-soft:#3E1D16; --shadow:#000000;
-  --vault:#050B09; --vault-2:#0C1814; --vault-line:#25392F; --code-bg:#050B09; color-scheme:dark}
+  --bg:#000000; --surface:#131314; --sunk:#1D1D1F; --ink:#F5F5F6; --muted:#9B9BA1; --line:#2A2A2D;
+  --brand:#5BE49B; --brand-ink:#04140B; --brand-soft:#10301F; --amber:#FFC661; --amber-ink:#1F1400; --amber-soft:#35280C;
+  --danger:#FF7A6E; --danger-soft:#3A1512; --shadow:rgba(0,0,0,.5);
+  --hero:#1B1B1D; --hero-2:#2C2C30; color-scheme:dark}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;padding:28px 16px 48px;
-  background-color:var(--bg);
-  background-image:
-    repeating-radial-gradient(circle at 0 0,transparent 0 13px,color-mix(in srgb,var(--ink) 5%,transparent) 13px 14px),
-    repeating-radial-gradient(circle at 100% 0,transparent 0 17px,color-mix(in srgb,var(--brand) 6%,transparent) 17px 18px);
-  background-attachment:fixed}
-.wrap{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;padding:22px 16px 48px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
 
-/* Masthead */
-.mast{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:end;border-bottom:3px double var(--ink);padding-bottom:18px}
-.serial{display:flex;flex-wrap:wrap;gap:6px 14px;font:500 11px/1.4 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.serial b{color:var(--amber);font-weight:600}
-h1{font-family:var(--f-display);font-weight:800;font-size:clamp(44px,8vw,92px);line-height:.92;letter-spacing:-.035em;margin:0;font-variation-settings:"opsz" 144}
-h1 em{font-weight:400;font-style:italic;color:var(--brand);letter-spacing:-.02em}
-.sub{color:var(--muted);margin:14px 0 0;max-width:62ch;font-size:16px}
-.mast-r{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
-.seal{width:132px;height:132px;color:var(--brand);flex:none}
-.seal .spin{transform-origin:50% 50%;animation:spin 48s linear infinite}
-.seal text{font:600 9.6px var(--f-mono);letter-spacing:.19em;fill:currentColor}
-@keyframes spin{to{transform:rotate(360deg)}}
-@media (max-width:640px){.mast{grid-template-columns:1fr}.mast-r{flex-direction:row;align-items:center;justify-content:space-between}.seal{width:84px;height:84px}}
+/* Top bar */
+.mast{display:flex;justify-content:space-between;align-items:center;gap:14px}
+.logo{display:flex;align-items:center;gap:12px;min-width:0}
+.mark{width:44px;height:44px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;flex:none}
+.mark svg{width:22px;height:22px}
+h1{font-family:var(--f-display);font-weight:800;font-size:26px;letter-spacing:-.03em;line-height:1.1;margin:0}
+.sub{color:var(--muted);margin:1px 0 0;font-size:13.5px;max-width:70ch}
+.mast-r{display:flex;align-items:center;gap:8px;flex:none}
+.chip{font-size:12px;font-weight:700;background:var(--amber-soft);color:var(--amber);padding:6px 11px;border-radius:999px;white-space:nowrap}
 
-/* Index tabs */
-.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border:1px solid var(--ink);background:var(--surface);box-shadow:5px 5px 0 var(--shadow)}
-.tabs button{border:0;border-right:1px solid var(--ink);background:none;font:700 16px/1.2 var(--f-body);color:var(--ink);padding:12px 14px 13px;cursor:pointer;text-align:left;position:relative;transition:background .18s,color .18s}
-.tabs button:last-child{border-right:0}
-.tabs button b{display:block;font:500 11px var(--f-mono);letter-spacing:.14em;color:var(--amber);margin-bottom:5px}
-.tabs small{display:block;font-weight:500;font-size:12px;color:var(--muted);margin-top:2px}
-.tabs button:hover{background:var(--sunk)}
-.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
-.tabs button[aria-pressed="true"] small{color:color-mix(in srgb,var(--bg) 72%,transparent)}
-.tabs button[aria-pressed="true"] b{color:var(--gold)}
+/* View switcher: segmented control on laptops */
+.tabs{display:flex;gap:4px;background:var(--surface);border-radius:999px;padding:5px;width:fit-content;max-width:100%;box-shadow:0 1px 2px var(--shadow)}
+.tabs button{border:0;background:none;font:700 14.5px var(--f-body);color:var(--muted);padding:10px 18px;border-radius:999px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .2s,color .2s}
+.tabs button b,.tabs small{display:none}
 .tabs i{font-style:normal}
-.ti{display:none;width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.ti{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 
 /* Layout */
-.grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);grid-template-areas:"pane money" "pane log" "pane guide";grid-template-rows:auto auto 1fr;gap:18px 24px;align-items:start}
+.grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);grid-template-areas:"pane money" "pane log" "pane guide";grid-template-rows:auto auto 1fr;gap:16px 20px;align-items:start}
 #pane{grid-area:pane} #money{grid-area:money} #logcard{grid-area:log} #guide{grid-area:guide}
-@media (max-width:920px){.grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"money" "pane" "log" "guide";grid-template-rows:none}}
-.pane{display:flex;flex-direction:column;gap:16px;min-width:0}
+.pane{display:flex;flex-direction:column;gap:14px;min-width:0}
 .pane:focus{outline:none}
-.pane.enter>*{animation:rise .5s cubic-bezier(.2,.7,.2,1) both}
-.pane.enter>*:nth-child(2){animation-delay:.06s}.pane.enter>*:nth-child(3){animation-delay:.12s}.pane.enter>*:nth-child(4){animation-delay:.18s}.pane.enter>*:nth-child(n+5){animation-delay:.24s}
-@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-.mast,.tabs,#money,#logcard,#guide{animation:rise .6s cubic-bezier(.2,.7,.2,1) both}
-.tabs{animation-delay:.08s}#money{animation-delay:.16s}#logcard{animation-delay:.24s}#guide{animation-delay:.32s}
+.pane.enter>*{animation:rise .45s cubic-bezier(.2,.8,.2,1) both}
+.pane.enter>*:nth-child(2){animation-delay:.05s}.pane.enter>*:nth-child(3){animation-delay:.1s}.pane.enter>*:nth-child(n+4){animation-delay:.15s}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 
-/* Cards: printed forms */
-.card{background:var(--surface);border:1px solid var(--line);border-top:2px solid var(--ink);padding:18px 20px 20px;display:flex;flex-direction:column;gap:12px;min-width:0;position:relative}
-.lbl{font:600 11px/1.4 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-h2{font-family:var(--f-display);font-size:22px;margin:0;line-height:1.2}
-h3{font-family:var(--f-display);font-weight:600;font-size:19px;margin:0;line-height:1.25}
+/* Cards */
+.card{background:var(--surface);border-radius:26px;padding:20px;display:flex;flex-direction:column;gap:12px;min-width:0;box-shadow:0 1px 2px var(--shadow)}
+.lbl{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:-.005em}
+h2{font-size:20px;margin:0;line-height:1.25;letter-spacing:-.02em}
+h3{font-size:17px;font-weight:800;margin:0;line-height:1.3;letter-spacing:-.015em}
 p{margin:0}
 .muted{color:var(--muted)} .note{font-size:12.5px;color:var(--muted)}
-.err{font-size:13px;color:var(--danger);font-weight:700;border-left:3px solid var(--danger);padding-left:8px}
-.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.err{font-size:13px;color:var(--danger);font-weight:700;background:var(--danger-soft);padding:8px 12px;border-radius:12px}
+.mono{font-family:var(--f-body);font-variant-numeric:tabular-nums;font-weight:700}
+pre,.chips code{font-family:var(--f-mono)}
 .row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.big{font-family:var(--f-display);font-weight:700;font-size:clamp(30px,5vw,44px);line-height:1.05;letter-spacing:-.02em;font-variant-numeric:lining-nums tabular-nums;font-variation-settings:"opsz" 96}
-.code{font-family:var(--f-mono);font-weight:600;letter-spacing:.32em;color:var(--brand);border:2px dashed var(--brand);padding:8px 6px 8px 18px;width:fit-content;background:var(--brand-soft)}
+.big{font-family:var(--f-display);font-weight:800;font-size:clamp(30px,5vw,40px);line-height:1.1;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+.code{letter-spacing:.3em;background:var(--sunk);border-radius:18px;padding:12px 8px 12px 22px;width:fit-content}
 
-/* Buttons: pressed like a stamp */
-.btn{border:1.5px solid var(--ink);border-radius:2px;padding:9px 15px;font:700 14px var(--f-body);cursor:pointer;background:var(--brand);color:var(--brand-ink);min-height:42px;box-shadow:3px 3px 0 var(--shadow);transition:transform .08s,box-shadow .08s,filter .15s}
-.btn:hover{filter:brightness(1.08)}
-.btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--shadow)}
-.btn.ghost{background:var(--surface);color:var(--ink)}
-.btn.warn{background:var(--surface);color:var(--danger);border-color:var(--danger);box-shadow:3px 3px 0 var(--danger)}
-.btn.amber{background:var(--amber);color:var(--amber-ink)}
-.btn.small{padding:5px 10px;min-height:32px;font-size:12.5px;box-shadow:2px 2px 0 var(--shadow)}
-.btn:focus-visible,.tabs button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
-.acts{display:flex;flex-wrap:wrap;gap:10px}
+/* The balance card */
+.card.hero{background:radial-gradient(120% 140% at 100% 0%,var(--hero-2) 0%,var(--hero) 60%);color:var(--hero-ink);padding:24px 22px;border-radius:30px;position:relative;overflow:hidden;box-shadow:0 18px 40px -18px rgba(0,0,0,.55)}
+.card.hero::after{content:"";position:absolute;right:-70px;bottom:-110px;width:260px;height:260px;border-radius:50%;border:38px solid rgba(255,255,255,.05);pointer-events:none}
+.hero .lbl,.hero .muted,.hero .note{color:var(--hero-muted)}
+.hero .big{font-size:clamp(34px,6.5vw,46px)}
+.hero .meter{background:var(--hero-line)}.hero .meter span{background:var(--mint)}
+.hero>*{position:relative;z-index:1}
 
-/* Status stamps */
-.pill{display:inline-flex;align-items:center;font:600 11px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;padding:5px 9px;border:1.5px solid currentColor;border-radius:2px;color:var(--muted);white-space:nowrap;width:fit-content;background:transparent}
-.pill.funded{color:var(--brand);background:var(--brand-soft)}
-.pill.delivered,.pill.early,.pill.out{color:var(--amber);background:var(--amber-soft)}
-.pill.released{color:var(--brand);outline:1.5px solid currentColor;outline-offset:2px;transform:rotate(-2deg);margin:3px 4px;animation:stamp .35s cubic-bezier(.3,1.6,.5,1) both}
-.pill.disputed{color:var(--danger);background:var(--danger-soft)}
-.pill.refunded{color:var(--danger);outline:1.5px solid currentColor;outline-offset:2px;transform:rotate(2deg);margin:3px 4px;animation:stamp .35s cubic-bezier(.3,1.6,.5,1) both}
-@keyframes stamp{from{opacity:0;scale:1.7}to{opacity:1;scale:1}}
+/* Buttons */
+.btn{border:0;border-radius:999px;padding:11px 20px;font:700 14.5px var(--f-body);cursor:pointer;background:var(--ink);color:var(--bg);min-height:44px;transition:transform .12s,opacity .15s}
+.btn:hover{opacity:.86}
+.btn:active{transform:scale(.96)}
+.btn.ghost{background:var(--sunk);color:var(--ink)}
+.btn.warn{background:var(--danger-soft);color:var(--danger)}
+.btn.amber{background:var(--brand);color:var(--brand-ink)}
+.btn.small{padding:7px 14px;min-height:34px;font-size:13px}
+.ms .btn.ghost{background:var(--surface)}
+.chip i{font-style:normal}
+.btn:focus-visible,.tabs button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.acts{display:flex;flex-wrap:wrap;gap:8px}
 
-.ms{border:1px solid var(--line);border-left:4px solid var(--ink);padding:12px 14px;display:flex;flex-direction:column;gap:10px;background:var(--sunk)}
+/* Status chips */
+.pill{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;padding:5px 12px 5px 10px;border-radius:999px;background:var(--sunk);color:var(--muted);white-space:nowrap;width:fit-content}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.pill.funded{background:var(--brand-soft);color:var(--brand)}
+.pill.delivered,.pill.early,.pill.out{background:var(--amber-soft);color:var(--amber)}
+.pill.released{background:var(--brand);color:var(--brand-ink)}
+.pill.disputed,.pill.refunded{background:var(--danger-soft);color:var(--danger)}
+
+.ms{border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;background:var(--sunk)}
 .form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .form .wide{grid-column:1/-1}
-@media (max-width:560px){.form{grid-template-columns:1fr}}
-.form label,.fld{display:flex;flex-direction:column;gap:5px;font:600 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-select,input{font:400 15px var(--f-body);letter-spacing:0;text-transform:none;color:var(--ink);background:var(--surface);border:0;border-bottom:1.5px solid var(--ink);border-radius:0;padding:8px 6px;min-height:42px;max-width:100%;width:100%}
-input[type=file]{border-bottom-style:dashed;font-size:13px}
-input:disabled{color:var(--muted);border-bottom-style:dotted}
-.meter{height:10px;border:1.5px solid var(--ink);background:var(--surface);overflow:hidden}
-.meter span{display:block;height:100%;background:repeating-linear-gradient(-45deg,var(--brand) 0 6px,color-mix(in srgb,var(--brand) 70%,var(--surface)) 6px 12px);transition:width .5s}
-.hist div{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px dotted var(--line)}
+.form>.card{box-shadow:0 1px 2px var(--shadow)}
+.form label,.fld{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;color:var(--muted)}
+select,input{font:600 15px var(--f-body);color:var(--ink);background:var(--sunk);border:0;border-radius:16px;padding:11px 14px;min-height:46px;max-width:100%;width:100%}
+.ms select,.ms input,.card .card input{background:var(--surface)}
+input[type=file]{font-size:13px;font-weight:500}
+input:disabled{color:var(--muted)}
+.meter{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.meter span{display:block;height:100%;border-radius:99px;background:var(--brand);transition:width .5s}
+.hist div{display:flex;justify-content:space-between;gap:8px;padding:11px 0;border-bottom:1px solid var(--line)}
+.hist div:last-child{border-bottom:0}
 .steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chips code{font:12px var(--f-mono);background:var(--sunk);border:1px solid var(--line);padding:3px 7px}
-.empty{color:var(--muted);text-align:center;padding:14px;font-style:italic;font-family:var(--f-display);font-size:16px}
+.chips code{font-size:12px;background:var(--sunk);border-radius:999px;padding:4px 10px}
+.empty{color:var(--muted);text-align:center;padding:14px}
 
-/* The vault: where the money is */
-#money{background-color:var(--vault);color:var(--vault-ink);border:1px solid var(--vault-line);border-top:2px solid var(--gold);box-shadow:6px 6px 0 var(--shadow);overflow:hidden;
-  background-image:repeating-radial-gradient(circle at 110% -20%,transparent 0 15px,color-mix(in srgb,var(--gold) 9%,transparent) 15px 16px)}
-#money .lbl{color:var(--gold)} #money .note,#money .muted{color:var(--vault-muted)}
-.flowmap{display:grid;grid-template-columns:1fr 26px 1fr 26px 1fr;align-items:stretch;gap:0}
-.node{border:1px solid var(--vault-line);background:var(--vault-2);padding:12px 6px;text-align:center;min-width:0;transition:border-color .3s,box-shadow .3s}
-.node small{display:block;color:var(--vault-muted);font:600 10px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;line-height:1.3}
-.node .mono{display:block;font-size:14.5px;margin-top:6px;font-weight:600}
-.node.active{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold),0 0 22px color-mix(in srgb,var(--gold) 28%,transparent)}
-.node.active .mono{color:var(--gold)}
-.arrow{align-self:center;height:2px;font-size:0;background:repeating-linear-gradient(90deg,var(--vault-muted) 0 5px,transparent 5px 10px);background-size:10px 2px;opacity:.55}
-.flowmap:has(.node.active) .arrow{opacity:1;background-image:repeating-linear-gradient(90deg,var(--gold) 0 5px,transparent 5px 10px);animation:flow .6s linear infinite}
-@keyframes flow{to{background-position:10px 0}}
-.bump{animation:bump .6s ease-out}
-@keyframes bump{0%{color:var(--gold);transform:scale(1.14)}100%{transform:none}}
-.ledger{display:flex;flex-direction:column;font-size:13px}
-.ledger div{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-top:1px dotted var(--vault-line)}
-.ok{color:var(--gold);font-weight:700;font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+/* Where the money is */
+.flowmap{display:grid;grid-template-columns:1fr 18px 1fr 18px 1fr;align-items:stretch}
+.node{border-radius:20px;background:var(--sunk);padding:13px 6px;text-align:center;min-width:0;transition:background .3s,color .3s}
+.node small{display:block;color:var(--muted);font-size:11.5px;font-weight:700;line-height:1.3}
+.node .mono{display:block;font-size:15px;margin-top:5px;font-weight:800;letter-spacing:-.01em}
+.node.active{background:var(--brand-soft)}
+.node.active .mono,.node.active small{color:var(--brand)}
+#n-esc.active{background:var(--ink)}
+#n-esc.active .mono{color:var(--bg)} #n-esc.active small{color:var(--muted)}
+.arrow{align-self:center;height:2px;font-size:0;background:var(--line)}
+.flowmap:has(#n-esc.active) .arrow{background:repeating-linear-gradient(90deg,var(--brand) 0 4px,transparent 4px 8px);background-size:8px 2px;animation:flow .5s linear infinite}
+@keyframes flow{to{background-position:8px 0}}
+.bump{animation:bump .5s ease-out}
+@keyframes bump{0%{transform:scale(1.16)}100%{transform:none}}
+.ledger{display:flex;flex-direction:column;font-size:13.5px}
+.ledger div{display:flex;justify-content:space-between;gap:8px;padding:9px 0;border-top:1px solid var(--line)}
+.ok{color:var(--brand);font-weight:700;font-size:12.5px}
 
-/* Receipt tape */
-#logcard{background:var(--sunk)}
-.log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;max-height:320px;overflow:auto;font-size:13px}
-.log li{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:8px 0;border-bottom:1px dashed var(--line)}
-.log li:first-child{animation:rise .35s ease-out}
-pre{margin:0;background:var(--code-bg);color:var(--code-ink);border-left:4px solid var(--gold);padding:14px 16px;overflow-x:auto;font:13px/1.6 var(--f-mono)}
-pre .k{color:var(--code-key)} pre .s{color:var(--code-str)} pre .c{opacity:.65}
-.guide{margin:0;padding-left:0;list-style:none;counter-reset:g;display:flex;flex-direction:column;gap:9px;color:var(--muted)}
-.guide li{counter-increment:g;display:grid;grid-template-columns:30px 1fr;gap:4px}
-.guide li::before{content:counter(g,decimal-leading-zero);font:600 12px/1.9 var(--f-mono);color:var(--amber)}
-/* Phones: an app shell with a bottom tab bar */
+/* Activity */
+.log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;max-height:320px;overflow:auto;font-size:13.5px}
+.log li{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.log li:last-child{border-bottom:0}
+.log li:first-child{animation:rise .3s ease-out}
+.log .mono{font-weight:600;font-size:12px;line-height:1.75}
+pre{margin:0;background:var(--code-bg);color:var(--code-ink);border-radius:20px;padding:16px 18px;overflow-x:auto;font-size:13px;line-height:1.6}
+pre .k{color:var(--code-key)} pre .s{color:var(--code-str)} pre .c{opacity:.6}
+.guide{margin:0;padding:0;list-style:none;counter-reset:g;display:flex;flex-direction:column;gap:10px;color:var(--muted);font-size:14px}
+.guide li{counter-increment:g;display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start}
+.guide li::before{content:counter(g);width:26px;height:26px;border-radius:50%;background:var(--sunk);color:var(--ink);font-weight:800;font-size:12.5px;display:grid;place-items:center}
+
+@media (max-width:920px){.grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"money" "pane" "log" "guide";grid-template-rows:none}}
+@media (max-width:560px){.form{grid-template-columns:1fr}}
+/* Phones: app shell with a floating bottom bar */
 @media (max-width:720px){
-  body{padding:calc(14px + env(safe-area-inset-top,0px)) max(14px,env(safe-area-inset-right,0px)) calc(92px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent}
-  .wrap{gap:16px}
-  .mast{grid-template-columns:minmax(0,1fr) auto;align-items:center;padding-bottom:12px;gap:10px}
-  h1{font-size:34px;line-height:1}
-  .sub{display:none}
-  .serial{font-size:9.5px;letter-spacing:.1em;margin-bottom:4px}
-  .mast-r{flex-direction:column;align-items:flex-end;gap:6px}
-  .seal{width:54px;height:54px}.seal text{display:none}
-  .tabs{position:fixed;left:0;right:0;bottom:0;z-index:50;grid-template-columns:repeat(4,minmax(0,1fr));border:0;border-top:1px solid var(--ink);box-shadow:0 -6px 24px color-mix(in srgb,var(--shadow) 18%,transparent);padding-bottom:env(safe-area-inset-bottom,0px);animation:none}
-  .tabs button{border:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 2px 8px;font-size:11.5px;font-weight:600;text-align:center;color:var(--muted);min-height:58px}
-  .tabs button b,.tabs small,.tabs i{display:none}
-  .ti{display:block}
-  .tabs button[aria-pressed="true"]{background:none;color:var(--brand);box-shadow:inset 0 3px 0 var(--brand)}
-  .card{padding:15px 15px 17px}
+  body{padding:calc(14px + env(safe-area-inset-top,0px)) max(14px,env(safe-area-inset-right,0px)) calc(104px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent}
+  .wrap{gap:14px}
+  .sub,.chip i{display:none}
+  .logo{flex:none}
+  #money .row .note{display:none}
+  h1{font-size:22px}
+  .mark{width:40px;height:40px}
+  .tabs{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:50;width:auto;max-width:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;padding:6px;border-radius:30px;background:color-mix(in srgb,var(--surface) 86%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);box-shadow:0 10px 34px -8px rgba(0,0,0,.35),0 0 0 1px var(--line)}
+  .tabs button{flex-direction:column;gap:3px;padding:8px 2px 7px;font-size:11.5px;border-radius:24px;min-height:54px;justify-content:center}
+  .tabs i{display:none}
+  .ti{width:22px;height:22px}
+  .card{padding:18px;border-radius:24px}
+  .card.hero{padding:22px 20px;border-radius:28px}
   select,input{font-size:16px}
-  .btn{min-height:46px}
+  .btn{min-height:48px}
   .btn.small{min-height:34px}
   .acts .btn{flex:1 1 auto}
   #guide{display:none}
@@ -194,24 +192,13 @@ pre .k{color:var(--code-key)} pre .s{color:var(--code-str)} pre .c{opacity:.65}
 <body>
 <div class="wrap">
   <header class="mast">
-    <div>
-      <div class="serial"><span>Escrow ledger · Cairo</span><b>Prototype · no real money</b></div>
-      <h1>SafePay <em>for Business</em></h1>
-      <p class="sub">Escrow payments for businesses of any size: supplier orders, delivery orders and platforms. Money is held by a licensed partner bank and released only when delivery is confirmed.</p>
+    <div class="logo">
+      <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2.5" fill="currentColor"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
+      <div><h1>SafePay</h1>
+      <p class="sub">Escrow payments for businesses of any size. Money is held by a licensed partner bank and released only when delivery is confirmed.</p></div>
     </div>
-    <div class="mast-r">
-      <svg class="seal" viewBox="0 0 132 132" aria-hidden="true">
-        <defs><path id="seal-ring" d="M66 66 m-50 0 a50 50 0 1 1 100 0 a50 50 0 1 1 -100 0"/></defs>
-        <circle cx="66" cy="66" r="64" fill="none" stroke="currentColor" stroke-width="1.5"/>
-        <circle cx="66" cy="66" r="60" fill="none" stroke="currentColor" stroke-width=".6" stroke-dasharray="1.5 3"/>
-        <g class="spin"><text><textPath href="#seal-ring">HELD IN ESCROW · LICENSED PARTNER BANK · RELEASED ON DELIVERY ·</textPath></text></g>
-        <circle cx="66" cy="66" r="38" fill="none" stroke="currentColor" stroke-width="1"/>
-        <rect x="52" y="62" width="28" height="22" rx="2" fill="currentColor"/>
-        <path d="M57 62v-7a9 9 0 0 1 18 0v7" fill="none" stroke="currentColor" stroke-width="3.5"/>
-        <circle cx="66" cy="72" r="3" fill="var(--bg)"/>
-      </svg>
-      <button class="btn ghost small" id="theme" type="button">Theme: auto</button>
-    </div>
+    <div class="mast-r"><span class="chip">Prototype<i> · no real money</i></span>
+      <button class="btn ghost small" id="theme" type="button">Theme: auto</button></div>
   </header>
 
   <nav class="tabs" role="group" aria-label="View as">
@@ -330,7 +317,7 @@ function buyerView(){
       ${m.status==='disputed'?`<span class="note">Money stays frozen in escrow. SafePay reviews within 5 business days. Choose the outcome to simulate:</span><div class="acts">${btn('resolve-release',k,'Fixed: release to supplier')}${btn('resolve-refund',k,'Not fixed: refund buyer','ghost')}</div>`:''}
       ${m.status==='released'&&m.auto?`<span class="note">Auto-released after ${AUTO_HOURS} hours with no buyer action.</span>`:''}
     </div>`}).join('')}</div>`).join('');
-  return `<div class="card"><div class="row"><div><span class="lbl">Delta Retail Co. · operating account</span><div class="big">${egp(S.buyer)}</div></div>
+  return `<div class="card hero"><div class="row"><div><span class="lbl">Delta Retail Co. · operating account</span><div class="big">${egp(S.buyer)}</div></div>
     <div><span class="lbl">Held in escrow</span><div class="big">${egp(S.escrow)}</div></div></div></div>`+create+list;
 }
 
@@ -348,7 +335,7 @@ function supplierView(){
       ${m.status==='disputed'?`<span class="note">The buyer disputed this delivery. The money is frozen in escrow during review.</span>`:''}
       ${m.status==='refunded'&&m.advance?`<span class="note">Refunded to the buyer. The early payout of ${egp(m.advance)} was returned to the financing partner.</span>`:''}
     </div>`}).join('')}</div>`).join(''):`<div class="card"><p class="empty">No orders yet. Switch to Buyer company and create one for Al-Amal Packaging.</p></div>`;
-  return `<div class="card"><span class="lbl">Al-Amal Packaging · SafePay business wallet</span><div class="big" id="sup-wallet">${egp(S.wallets[ME])}</div>
+  return `<div class="card hero"><span class="lbl">Al-Amal Packaging · SafePay business wallet</span><div class="big" id="sup-wallet">${egp(S.wallets[ME])}</div>
     <div class="row"><span class="muted">Verified payment record</span><span class="mono">${egp(income)}</span></div>
     <span class="lbl" id="ready-lbl">Financing readiness</span>
     <div class="meter" role="progressbar" aria-labelledby="ready-lbl" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><span style="width:${pct}%"></span></div>
@@ -382,8 +369,8 @@ function deliveryView(){
     cust=`${pill('refunded')}<p class="muted">${egp(t)} refunded in full to your ${D.method==='Card'?'card':D.method==='InstaPay'?'InstaPay account':'mobile wallet'}.</p>${tl}${btn('d-again','order','Place another order','ghost')}`;
     cour=`<p class="empty">Parcel returned to the shop.</p>`;
   }
-  return `<div class="card"><span class="lbl">Delivery orders · any shop, any courier</span><p class="muted">Replaces cash on delivery. The customer prepays into escrow, the courier never carries cash, and the shop is paid the moment the customer's code confirms the handover. A refused parcel is refunded in full.</p></div>
-  <div class="card"><span class="lbl">Nile Crafts · small online shop wallet</span><div class="big" id="shop-wallet">${egp(S.shop)}</div><span class="note">SafePay fee 1% on each released order. A one-person shop gets the same protection as a big retailer.</span></div>
+  return `<div class="card hero"><span class="lbl">Nile Crafts · small online shop wallet</span><div class="big" id="shop-wallet">${egp(S.shop)}</div><span class="note">SafePay fee 1% on each released order. A one-person shop gets the same protection as a big retailer.</span></div>
+  <div class="card"><span class="lbl">Delivery orders · any shop, any courier</span><p class="muted">Replaces cash on delivery. The customer prepays into escrow, the courier never carries cash, and the shop is paid the moment the customer's code confirms the handover. A refused parcel is refunded in full.</p></div>
   <div class="form"><div class="card"><span class="lbl">Customer · Mona A. · balance ${egp(S.customer)}</span>${cust}</div><div class="card"><span class="lbl">Courier app</span>${cour}</div></div>`;
 }
 
