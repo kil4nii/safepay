@@ -2,8 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SafePay MVP</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SafePay</title>
+<meta name="description" content="SafePay: escrow payments for businesses of any size. Prototype, no real money.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#EDE6D3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0A1310" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SafePay">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&family=Instrument+Sans:wght@400..700&family=JetBrains+Mono:wght@400..700&display=swap">
@@ -63,7 +73,8 @@ h1 em{font-weight:400;font-style:italic;color:var(--brand);letter-spacing:-.02em
 .tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 .tabs button[aria-pressed="true"] small{color:color-mix(in srgb,var(--bg) 72%,transparent)}
 .tabs button[aria-pressed="true"] b{color:var(--gold)}
-@media (max-width:720px){.tabs{grid-template-columns:1fr 1fr}.tabs button:nth-child(2){border-right:0}.tabs button:nth-child(-n+2){border-bottom:1px solid var(--ink)}}
+.tabs i{font-style:normal}
+.ti{display:none;width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 
 /* Layout */
 .grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);grid-template-areas:"pane money" "pane log" "pane guide";grid-template-rows:auto auto 1fr;gap:18px 24px;align-items:start}
@@ -155,6 +166,28 @@ pre .k{color:var(--code-key)} pre .s{color:var(--code-str)} pre .c{opacity:.65}
 .guide{margin:0;padding-left:0;list-style:none;counter-reset:g;display:flex;flex-direction:column;gap:9px;color:var(--muted)}
 .guide li{counter-increment:g;display:grid;grid-template-columns:30px 1fr;gap:4px}
 .guide li::before{content:counter(g,decimal-leading-zero);font:600 12px/1.9 var(--f-mono);color:var(--amber)}
+/* Phones: an app shell with a bottom tab bar */
+@media (max-width:720px){
+  body{padding:calc(14px + env(safe-area-inset-top,0px)) max(14px,env(safe-area-inset-right,0px)) calc(92px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent}
+  .wrap{gap:16px}
+  .mast{grid-template-columns:minmax(0,1fr) auto;align-items:center;padding-bottom:12px;gap:10px}
+  h1{font-size:34px;line-height:1}
+  .sub{display:none}
+  .serial{font-size:9.5px;letter-spacing:.1em;margin-bottom:4px}
+  .mast-r{flex-direction:column;align-items:flex-end;gap:6px}
+  .seal{width:54px;height:54px}.seal text{display:none}
+  .tabs{position:fixed;left:0;right:0;bottom:0;z-index:50;grid-template-columns:repeat(4,minmax(0,1fr));border:0;border-top:1px solid var(--ink);box-shadow:0 -6px 24px color-mix(in srgb,var(--shadow) 18%,transparent);padding-bottom:env(safe-area-inset-bottom,0px);animation:none}
+  .tabs button{border:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 2px 8px;font-size:11.5px;font-weight:600;text-align:center;color:var(--muted);min-height:58px}
+  .tabs button b,.tabs small,.tabs i{display:none}
+  .ti{display:block}
+  .tabs button[aria-pressed="true"]{background:none;color:var(--brand);box-shadow:inset 0 3px 0 var(--brand)}
+  .card{padding:15px 15px 17px}
+  select,input{font-size:16px}
+  .btn{min-height:46px}
+  .btn.small{min-height:34px}
+  .acts .btn{flex:1 1 auto}
+  #guide{display:none}
+}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -182,10 +215,10 @@ pre .k{color:var(--code-key)} pre .s{color:var(--code-str)} pre .c{opacity:.65}
   </header>
 
   <nav class="tabs" role="group" aria-label="View as">
-    <button type="button" id="t-buyer" aria-pressed="true"><b aria-hidden="true">01</b>Buyer company<small>Delta Retail Co.</small></button>
-    <button type="button" id="t-supplier" aria-pressed="false"><b aria-hidden="true">02</b>Supplier<small>Al-Amal Packaging</small></button>
-    <button type="button" id="t-delivery" aria-pressed="false"><b aria-hidden="true">03</b>Delivery checkout<small>Nile Crafts shop</small></button>
-    <button type="button" id="t-api" aria-pressed="false"><b aria-hidden="true">04</b>API &amp; webhooks<small>For platforms</small></button>
+    <button type="button" id="t-buyer" aria-pressed="true"><svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5l8-2v18M12 9l8 2v10M2 21h20M7 8h2M7 12h2M7 16h2M15 14h2M15 17h2"/></svg><b aria-hidden="true">01</b><span>Buyer<i> company</i></span><small>Delta Retail Co.</small></button>
+    <button type="button" id="t-supplier" aria-pressed="false"><svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8"/></svg><b aria-hidden="true">02</b><span>Supplier</span><small>Al-Amal Packaging</small></button>
+    <button type="button" id="t-delivery" aria-pressed="false"><svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 6h11v10H2zM13 10h5l4 3v3h-9M6.5 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17.5 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg><b aria-hidden="true">03</b><span>Delivery<i> checkout</i></span><small>Nile Crafts shop</small></button>
+    <button type="button" id="t-api" aria-pressed="false"><svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 4l-3 16"/></svg><b aria-hidden="true">04</b><span>API<i> &amp; webhooks</i></span><small>For platforms</small></button>
   </nav>
 
   <div class="grid">
@@ -466,7 +499,8 @@ $('pane').addEventListener('change',e=>{const t=e.target;
   if(t.id==='d-method')S.D.method=t.value});
 function enter(){const p=$('pane');p.classList.remove('enter');void p.offsetWidth;p.classList.add('enter')}
 $('pane').addEventListener('animationend',e=>{if(e.target.parentNode===$('pane')&&!e.target.nextElementSibling)$('pane').classList.remove('enter')});
-VIEWS.forEach(v=>$('t-'+v).addEventListener('click',()=>{const ch=S.view!==v;S.view=v;render();if(ch)enter()}));
+VIEWS.forEach(v=>$('t-'+v).addEventListener('click',()=>{const ch=S.view!==v;S.view=v;render();if(ch){enter();if(matchMedia('(max-width:720px)').matches)window.scrollTo(0,0)}}));
+if('serviceWorker' in navigator&&location.protocol!=='file:')addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 $('reset').addEventListener('click',()=>{fresh();render();enter()});
 
 const THEMES=['auto','light','dark'];let theme='auto';

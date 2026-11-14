@@ -6,7 +6,18 @@ This is a clickable prototype. It has no backend and moves no real money.
 
 ## Run it
 
-Open `index.html` in a browser. Everything is in that one file (HTML, CSS and vanilla JavaScript, no build step). The fonts load from Google Fonts; offline, the page falls back to system fonts.
+Open `index.html` in a browser. The app is plain HTML, CSS and vanilla JavaScript with no build step. The fonts load from Google Fonts; offline, the page falls back to system fonts.
+
+## Install it as a mobile app (iPhone and Android)
+
+SafePay is a progressive web app. Once it is served over HTTPS (for example with GitHub Pages), it installs to the home screen and opens full screen with its own icon, like a native app. After the first load it also opens offline.
+
+- **Android (Chrome):** open the link, tap the menu (three dots), then "Add to Home screen" or "Install app".
+- **iPhone (Safari):** open the link, tap the Share button, then "Add to Home Screen".
+
+On phones the four views move to a tab bar at the bottom of the screen.
+
+Files that make it installable: `manifest.webmanifest` (name, colours, icons), `sw.js` (offline cache) and `icons/`.
 
 ## The four views
 
