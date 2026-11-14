@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafePay MVP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&family=Instrument+Sans:wght@400..700&family=JetBrains+Mono:wght@400..700&display=swap">
+<style>
+/* Direction: "the escrow ledger" — banknote paper, engraved serif numerals, ink stamps, a dark vault panel. */
+:root{
+  --bg:#EDE6D3; --surface:#FAF6EA; --sunk:#F1EAD8; --ink:#12241D; --muted:#56625A; --line:#CDC3A9;
+  --brand:#0C6B50; --brand-ink:#FAF6EA; --brand-soft:#DBEADC; --amber:#8A4703; --amber-ink:#FFF8E8; --amber-soft:#F5E1B8;
+  --danger:#A3301D; --danger-soft:#F3D8CD; --shadow:#12241D;
+  --vault:#10231C; --vault-2:#16302A; --vault-ink:#EFE8D2; --vault-muted:#A3B5A9; --vault-line:#2F4A3F; --gold:#DDAA48;
+  --code-bg:#10231C; --code-ink:#DDE5DA; --code-key:#7FD1B0; --code-str:#EBC06A;
+  --f-display:"Fraunces","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --f-body:"Instrument Sans","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono","Cascadia Mono",Consolas,ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0A1310; --surface:#111E19; --sunk:#172822; --ink:#EFE8D2; --muted:#9FB0A5; --line:#294238;
+  --brand:#4CC39A; --brand-ink:#07130E; --brand-soft:#14352A; --amber:#E6AC4E; --amber-ink:#1A1204; --amber-soft:#3A2C12;
+  --danger:#F08A73; --danger-soft:#3E1D16; --shadow:#000000;
+  --vault:#050B09; --vault-2:#0C1814; --vault-line:#25392F; --code-bg:#050B09; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0A1310; --surface:#111E19; --sunk:#172822; --ink:#EFE8D2; --muted:#9FB0A5; --line:#294238;
+  --brand:#4CC39A; --brand-ink:#07130E; --brand-soft:#14352A; --amber:#E6AC4E; --amber-ink:#1A1204; --amber-soft:#3A2C12;
+  --danger:#F08A73; --danger-soft:#3E1D16; --shadow:#000000;
+  --vault:#050B09; --vault-2:#0C1814; --vault-line:#25392F; --code-bg:#050B09; color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;padding:28px 16px 48px;
+  background-color:var(--bg);
+  background-image:
+    repeating-radial-gradient(circle at 0 0,transparent 0 13px,color-mix(in srgb,var(--ink) 5%,transparent) 13px 14px),
+    repeating-radial-gradient(circle at 100% 0,transparent 0 17px,color-mix(in srgb,var(--brand) 6%,transparent) 17px 18px);
+  background-attachment:fixed}
+.wrap{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+
+/* Masthead */
+.mast{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:end;border-bottom:3px double var(--ink);padding-bottom:18px}
+.serial{display:flex;flex-wrap:wrap;gap:6px 14px;font:500 11px/1.4 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.serial b{color:var(--amber);font-weight:600}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(44px,8vw,92px);line-height:.92;letter-spacing:-.035em;margin:0;font-variation-settings:"opsz" 144}
+h1 em{font-weight:400;font-style:italic;color:var(--brand);letter-spacing:-.02em}
+.sub{color:var(--muted);margin:14px 0 0;max-width:62ch;font-size:16px}
+.mast-r{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.seal{width:132px;height:132px;color:var(--brand);flex:none}
+.seal .spin{transform-origin:50% 50%;animation:spin 48s linear infinite}
+.seal text{font:600 9.6px var(--f-mono);letter-spacing:.19em;fill:currentColor}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (max-width:640px){.mast{grid-template-columns:1fr}.mast-r{flex-direction:row;align-items:center;justify-content:space-between}.seal{width:84px;height:84px}}
+
+/* Index tabs */
+.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border:1px solid var(--ink);background:var(--surface);box-shadow:5px 5px 0 var(--shadow)}
+.tabs button{border:0;border-right:1px solid var(--ink);background:none;font:700 16px/1.2 var(--f-body);color:var(--ink);padding:12px 14px 13px;cursor:pointer;text-align:left;position:relative;transition:background .18s,color .18s}
+.tabs button:last-child{border-right:0}
+.tabs button b{display:block;font:500 11px var(--f-mono);letter-spacing:.14em;color:var(--amber);margin-bottom:5px}
+.tabs small{display:block;font-weight:500;font-size:12px;color:var(--muted);margin-top:2px}
+.tabs button:hover{background:var(--sunk)}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.tabs button[aria-pressed="true"] small{color:color-mix(in srgb,var(--bg) 72%,transparent)}
+.tabs button[aria-pressed="true"] b{color:var(--gold)}
+@media (max-width:720px){.tabs{grid-template-columns:1fr 1fr}.tabs button:nth-child(2){border-right:0}.tabs button:nth-child(-n+2){border-bottom:1px solid var(--ink)}}
+
+/* Layout */
+.grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);grid-template-areas:"pane money" "pane log" "pane guide";grid-template-rows:auto auto 1fr;gap:18px 24px;align-items:start}
+#pane{grid-area:pane} #money{grid-area:money} #logcard{grid-area:log} #guide{grid-area:guide}
+@media (max-width:920px){.grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"money" "pane" "log" "guide";grid-template-rows:none}}
+.pane{display:flex;flex-direction:column;gap:16px;min-width:0}
+.pane:focus{outline:none}
+.pane.enter>*{animation:rise .5s cubic-bezier(.2,.7,.2,1) both}
+.pane.enter>*:nth-child(2){animation-delay:.06s}.pane.enter>*:nth-child(3){animation-delay:.12s}.pane.enter>*:nth-child(4){animation-delay:.18s}.pane.enter>*:nth-child(n+5){animation-delay:.24s}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.mast,.tabs,#money,#logcard,#guide{animation:rise .6s cubic-bezier(.2,.7,.2,1) both}
+.tabs{animation-delay:.08s}#money{animation-delay:.16s}#logcard{animation-delay:.24s}#guide{animation-delay:.32s}
+
+/* Cards: printed forms */
+.card{background:var(--surface);border:1px solid var(--line);border-top:2px solid var(--ink);padding:18px 20px 20px;display:flex;flex-direction:column;gap:12px;min-width:0;position:relative}
+.lbl{font:600 11px/1.4 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+h2{font-family:var(--f-display);font-size:22px;margin:0;line-height:1.2}
+h3{font-family:var(--f-display);font-weight:600;font-size:19px;margin:0;line-height:1.25}
+p{margin:0}
+.muted{color:var(--muted)} .note{font-size:12.5px;color:var(--muted)}
+.err{font-size:13px;color:var(--danger);font-weight:700;border-left:3px solid var(--danger);padding-left:8px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.big{font-family:var(--f-display);font-weight:700;font-size:clamp(30px,5vw,44px);line-height:1.05;letter-spacing:-.02em;font-variant-numeric:lining-nums tabular-nums;font-variation-settings:"opsz" 96}
+.code{font-family:var(--f-mono);font-weight:600;letter-spacing:.32em;color:var(--brand);border:2px dashed var(--brand);padding:8px 6px 8px 18px;width:fit-content;background:var(--brand-soft)}
+
+/* Buttons: pressed like a stamp */
+.btn{border:1.5px solid var(--ink);border-radius:2px;padding:9px 15px;font:700 14px var(--f-body);cursor:pointer;background:var(--brand);color:var(--brand-ink);min-height:42px;box-shadow:3px 3px 0 var(--shadow);transition:transform .08s,box-shadow .08s,filter .15s}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--shadow)}
+.btn.ghost{background:var(--surface);color:var(--ink)}
+.btn.warn{background:var(--surface);color:var(--danger);border-color:var(--danger);box-shadow:3px 3px 0 var(--danger)}
+.btn.amber{background:var(--amber);color:var(--amber-ink)}
+.btn.small{padding:5px 10px;min-height:32px;font-size:12.5px;box-shadow:2px 2px 0 var(--shadow)}
+.btn:focus-visible,.tabs button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.acts{display:flex;flex-wrap:wrap;gap:10px}
+
+/* Status stamps */
+.pill{display:inline-flex;align-items:center;font:600 11px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;padding:5px 9px;border:1.5px solid currentColor;border-radius:2px;color:var(--muted);white-space:nowrap;width:fit-content;background:transparent}
+.pill.funded{color:var(--brand);background:var(--brand-soft)}
+.pill.delivered,.pill.early,.pill.out{color:var(--amber);background:var(--amber-soft)}
+.pill.released{color:var(--brand);outline:1.5px solid currentColor;outline-offset:2px;transform:rotate(-2deg);margin:3px 4px;animation:stamp .35s cubic-bezier(.3,1.6,.5,1) both}
+.pill.disputed{color:var(--danger);background:var(--danger-soft)}
+.pill.refunded{color:var(--danger);outline:1.5px solid currentColor;outline-offset:2px;transform:rotate(2deg);margin:3px 4px;animation:stamp .35s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes stamp{from{opacity:0;scale:1.7}to{opacity:1;scale:1}}
+
+.ms{border:1px solid var(--line);border-left:4px solid var(--ink);padding:12px 14px;display:flex;flex-direction:column;gap:10px;background:var(--sunk)}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form .wide{grid-column:1/-1}
+@media (max-width:560px){.form{grid-template-columns:1fr}}
+.form label,.fld{display:flex;flex-direction:column;gap:5px;font:600 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+select,input{font:400 15px var(--f-body);letter-spacing:0;text-transform:none;color:var(--ink);background:var(--surface);border:0;border-bottom:1.5px solid var(--ink);border-radius:0;padding:8px 6px;min-height:42px;max-width:100%;width:100%}
+input[type=file]{border-bottom-style:dashed;font-size:13px}
+input:disabled{color:var(--muted);border-bottom-style:dotted}
+.meter{height:10px;border:1.5px solid var(--ink);background:var(--surface);overflow:hidden}
+.meter span{display:block;height:100%;background:repeating-linear-gradient(-45deg,var(--brand) 0 6px,color-mix(in srgb,var(--brand) 70%,var(--surface)) 6px 12px);transition:width .5s}
+.hist div{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px dotted var(--line)}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips code{font:12px var(--f-mono);background:var(--sunk);border:1px solid var(--line);padding:3px 7px}
+.empty{color:var(--muted);text-align:center;padding:14px;font-style:italic;font-family:var(--f-display);font-size:16px}
+
+/* The vault: where the money is */
+#money{background-color:var(--vault);color:var(--vault-ink);border:1px solid var(--vault-line);border-top:2px solid var(--gold);box-shadow:6px 6px 0 var(--shadow);overflow:hidden;
+  background-image:repeating-radial-gradient(circle at 110% -20%,transparent 0 15px,color-mix(in srgb,var(--gold) 9%,transparent) 15px 16px)}
+#money .lbl{color:var(--gold)} #money .note,#money .muted{color:var(--vault-muted)}
+.flowmap{display:grid;grid-template-columns:1fr 26px 1fr 26px 1fr;align-items:stretch;gap:0}
+.node{border:1px solid var(--vault-line);background:var(--vault-2);padding:12px 6px;text-align:center;min-width:0;transition:border-color .3s,box-shadow .3s}
+.node small{display:block;color:var(--vault-muted);font:600 10px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;line-height:1.3}
+.node .mono{display:block;font-size:14.5px;margin-top:6px;font-weight:600}
+.node.active{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold),0 0 22px color-mix(in srgb,var(--gold) 28%,transparent)}
+.node.active .mono{color:var(--gold)}
+.arrow{align-self:center;height:2px;font-size:0;background:repeating-linear-gradient(90deg,var(--vault-muted) 0 5px,transparent 5px 10px);background-size:10px 2px;opacity:.55}
+.flowmap:has(.node.active) .arrow{opacity:1;background-image:repeating-linear-gradient(90deg,var(--gold) 0 5px,transparent 5px 10px);animation:flow .6s linear infinite}
+@keyframes flow{to{background-position:10px 0}}
+.bump{animation:bump .6s ease-out}
+@keyframes bump{0%{color:var(--gold);transform:scale(1.14)}100%{transform:none}}
+.ledger{display:flex;flex-direction:column;font-size:13px}
+.ledger div{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-top:1px dotted var(--vault-line)}
+.ok{color:var(--gold);font-weight:700;font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+
+/* Receipt tape */
+#logcard{background:var(--sunk)}
+.log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;max-height:320px;overflow:auto;font-size:13px}
+.log li{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:8px 0;border-bottom:1px dashed var(--line)}
+.log li:first-child{animation:rise .35s ease-out}
+pre{margin:0;background:var(--code-bg);color:var(--code-ink);border-left:4px solid var(--gold);padding:14px 16px;overflow-x:auto;font:13px/1.6 var(--f-mono)}
+pre .k{color:var(--code-key)} pre .s{color:var(--code-str)} pre .c{opacity:.65}
+.guide{margin:0;padding-left:0;list-style:none;counter-reset:g;display:flex;flex-direction:column;gap:9px;color:var(--muted)}
+.guide li{counter-increment:g;display:grid;grid-template-columns:30px 1fr;gap:4px}
+.guide li::before{content:counter(g,decimal-leading-zero);font:600 12px/1.9 var(--f-mono);color:var(--amber)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <div>
+      <div class="serial"><span>Escrow ledger · Cairo</span><b>Prototype · no real money</b></div>
+      <h1>SafePay <em>for Business</em></h1>
+      <p class="sub">Escrow payments for businesses of any size: supplier orders, delivery orders and platforms. Money is held by a licensed partner bank and released only when delivery is confirmed.</p>
+    </div>
+    <div class="mast-r">
+      <svg class="seal" viewBox="0 0 132 132" aria-hidden="true">
+        <defs><path id="seal-ring" d="M66 66 m-50 0 a50 50 0 1 1 100 0 a50 50 0 1 1 -100 0"/></defs>
+        <circle cx="66" cy="66" r="64" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="66" cy="66" r="60" fill="none" stroke="currentColor" stroke-width=".6" stroke-dasharray="1.5 3"/>
+        <g class="spin"><text><textPath href="#seal-ring">HELD IN ESCROW · LICENSED PARTNER BANK · RELEASED ON DELIVERY ·</textPath></text></g>
+        <circle cx="66" cy="66" r="38" fill="none" stroke="currentColor" stroke-width="1"/>
+        <rect x="52" y="62" width="28" height="22" rx="2" fill="currentColor"/>
+        <path d="M57 62v-7a9 9 0 0 1 18 0v7" fill="none" stroke="currentColor" stroke-width="3.5"/>
+        <circle cx="66" cy="72" r="3" fill="var(--bg)"/>
+      </svg>
+      <button class="btn ghost small" id="theme" type="button">Theme: auto</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="group" aria-label="View as">
+    <button type="button" id="t-buyer" aria-pressed="true"><b aria-hidden="true">01</b>Buyer company<small>Delta Retail Co.</small></button>
+    <button type="button" id="t-supplier" aria-pressed="false"><b aria-hidden="true">02</b>Supplier<small>Al-Amal Packaging</small></button>
+    <button type="button" id="t-delivery" aria-pressed="false"><b aria-hidden="true">03</b>Delivery checkout<small>Nile Crafts shop</small></button>
+    <button type="button" id="t-api" aria-pressed="false"><b aria-hidden="true">04</b>API &amp; webhooks<small>For platforms</small></button>
+  </nav>
+
+  <div class="grid">
+    <main class="pane" id="pane" tabindex="-1"></main>
+
+    <section class="card" id="money" aria-label="Where the money is">
+      <div class="row"><span class="lbl">Where the money is</span><span class="note">Escrow is held by the partner bank, not by SafePay</span></div>
+      <div class="flowmap">
+        <div class="node" id="n-pay"><small id="l-pay">Buyer account</small><span class="mono" id="v-pay"></span></div>
+        <span class="arrow" aria-hidden="true">→</span>
+        <div class="node" id="n-esc"><small>Escrow</small><span class="mono" id="v-esc"></span></div>
+        <span class="arrow" aria-hidden="true">→</span>
+        <div class="node" id="n-sel"><small id="l-sel">Supplier wallets</small><span class="mono" id="v-sel"></span></div>
+      </div>
+      <div class="ledger">
+        <div><span class="muted">SafePay fees earned (1% per escrow)</span><span class="mono" id="v-fees"></span></div>
+        <div><span class="muted">Financing partner funds</span><span class="mono" id="v-partner"></span></div>
+        <div><span class="muted">All money in the demo</span><span><span class="mono" id="v-total"></span> <span class="ok" id="v-check"></span></span></div>
+      </div>
+    </section>
+
+    <section class="card" id="logcard" aria-label="Event log">
+      <div class="row"><span class="lbl">Event log</span><button class="btn ghost small" id="reset" type="button">Restart demo</button></div>
+      <ul class="log" id="log" aria-live="polite"></ul>
+    </section>
+
+    <section class="card" id="guide" aria-label="Demo script">
+      <span class="lbl">Demo script</span>
+      <ol class="guide">
+        <li>Buyer creates an order with two milestones and funds it. The money goes to escrow, not to the supplier.</li>
+        <li>Supplier sees the order is funded, delivers milestone 1 and uploads proof.</li>
+        <li>Optional: supplier takes an early payout from the financing partner (1.5% fee).</li>
+        <li>Buyer approves (money released) or disputes (money frozen). If the buyer does nothing, escrow auto-releases after 72 hours.</li>
+        <li>Delivery checkout: a customer prepays a small shop into escrow. The courier hands over the parcel and the customer's 4-digit code releases the money. No cash on delivery.</li>
+        <li>API &amp; webhooks: how any platform plugs SafePay in.</li>
+      </ol>
+    </section>
+  </div>
+</div>
+
+<script>
+'use strict';
+const BUYER_START=2500000, PARTNER_START=1000000, CUSTOMER_START=5000;
+const FEE=0.01, EARLY_FEE=0.015, AUTO_HOURS=72, MIN_ORDER=1000;
+const SUPPLIERS=[
+  {id:'amal',name:'Al-Amal Packaging',type:'Small manufacturer',biz:'biz_al_amal'},
+  {id:'valley',name:'Green Valley Farms',type:'Agri supplier',biz:'biz_green_valley'},
+  {id:'nour',name:'Nour Studio',type:'Freelance designer',biz:'biz_nour_studio'}];
+const ME='amal';
+const ITEMS=[['Handmade brass lamp',1450],['Delivery',80]];
+const METHODS=['Mobile wallet','InstaPay','Card'];
+const VIEWS=['buyer','supplier','delivery','api'];
+const EVENT_TYPES=['escrow.funded','milestone.delivered','payout.early','milestone.released','milestone.disputed','milestone.refunded','order.paid','delivery.out_for_delivery','delivery.confirmed','order.refunded'];
+
+let S, seq, evSeq;
+const $=id=>document.getElementById(id);
+const egp=n=>'EGP '+Math.round(n).toLocaleString('en-US');
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const now=()=>new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+const today=()=>new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+const sup=id=>SUPPLIERS.find(s=>s.id===id);
+const feeOf=n=>Math.round(n*FEE);
+const advanceOf=n=>n-Math.round(n*EARLY_FEE);
+const dTotal=()=>ITEMS.reduce((a,i)=>a+i[1],0);
+const walletSum=()=>Object.values(S.wallets).reduce((a,b)=>a+b,0);
+const totalMoney=()=>S.buyer+S.escrow+S.fees+S.partner+S.customer+S.dEscrow+S.shop+walletSum();
+const START_TOTAL=BUYER_START+PARTNER_START+CUSTOMER_START;
+
+function freshD(){return {status:'cart',method:METHODS[0],code:String(1000+Math.floor(Math.random()*9000)),id:'ord_'+(5200+seq++),err:''}}
+function fresh(){
+  seq=1;evSeq=1;
+  S={view:'buyer',buyer:BUYER_START,escrow:0,fees:0,partner:PARTNER_START,customer:CUSTOMER_START,dEscrow:0,shop:0,
+    wallets:{amal:0,valley:0,nour:0},orders:[],log:[],events:[],formErr:'',
+    draft:{supplier:ME,desc:'Branded shopping bags, 40,000 units',amount:240000,split:'2'},
+    history:[['18 Oct','Delta Retail Co.',62000],['2 Oct','City Pharmacy Chain',38500],['21 Sep','Delta Retail Co.',55000]]};
+  S.D=freshD();
+}
+function log(m){S.log.unshift([now(),m])}
+function ev(type,id,extra){S.events.unshift({id:'evt_'+String(evSeq++).padStart(4,'0'),type,created:new Date().toISOString(),data:Object.assign({escrow_id:id},extra||{})})}
+function splitPlan(amount,split){
+  if(split==='2'){const a=Math.floor(amount/2);return [{name:'Milestone 1 · first delivery',amount:a},{name:'Milestone 2 · final delivery',amount:amount-a}]}
+  return [{name:'Full delivery',amount}];
+}
+const PILL={funded:'Funded · in escrow',delivered:'Delivered · awaiting approval',early:'Delivered · paid early',released:'Released',disputed:'Disputed · frozen',refunded:'Refunded',out:'Out for delivery'};
+const pill=st=>`<span class="pill ${st}">${PILL[st]}</span>`;
+const btn=(act,key,label,cls)=>`<button type="button" class="btn ${cls||''}" id="${act}-${key}" data-act="${act}" data-key="${key}">${label}</button>`;
+
+/* ---------- Views ---------- */
+function buyerView(){
+  const d=S.draft;
+  const create=`<div class="card"><span class="lbl">New escrow order</span>
+    <div class="form">
+      <label for="f-sup">Supplier<select id="f-sup">${SUPPLIERS.map(s=>`<option value="${s.id}" ${d.supplier===s.id?'selected':''}>${s.name} · ${s.type}</option>`).join('')}</select></label>
+      <label for="f-amt">Amount (EGP)<input id="f-amt" type="number" inputmode="numeric" min="${MIN_ORDER}" step="1000" value="${d.amount}"></label>
+      <label for="f-desc" class="wide">What is being delivered<input id="f-desc" maxlength="80" value="${esc(d.desc)}"></label>
+      <label for="f-split">Release plan<select id="f-split"><option value="1" ${d.split==='1'?'selected':''}>One payment on delivery</option><option value="2" ${d.split==='2'?'selected':''}>Two milestones (50% / 50%)</option></select></label>
+      <label for="f-fund">Funding<input id="f-fund" value="Corporate account via InstaPay" disabled></label>
+    </div>
+    ${S.formErr?`<span class="err" role="alert" id="f-err">${esc(S.formErr)}</span>`:''}
+    <div class="row"><span class="muted">SafePay fee 1%: <span class="mono" id="f-fee">${egp(feeOf(d.amount))}</span></span>
+    <button type="button" class="btn" id="create-order" data-act="create" data-key="order">Create and fund <span id="f-total">${egp(d.amount+feeOf(d.amount))}</span></button></div>
+    <span class="note">The supplier is paid only after you approve the delivery. If you do nothing, escrow auto-releases ${AUTO_HOURS} hours after delivery.</span></div>`;
+  const list=S.orders.map(o=>`<div class="card"><div class="row"><div><span class="lbl">${o.id} · ${sup(o.supplier).name}</span><h3>${esc(o.desc)}</h3></div><span class="mono">${egp(o.amount)}</span></div>
+    ${o.ms.map((m,i)=>{const k=o.id+'-'+i;return `<div class="ms"><div class="row"><b>${m.name}</b><span class="mono">${egp(m.amount)}</span></div><div class="row">${pill(m.status)}
+      ${m.proof?`<span class="note">Proof: ${esc(m.proof)}</span>`:''}</div>
+      ${m.status==='funded'?`<span class="note">Waiting for the supplier to deliver.</span>`:''}
+      ${(m.status==='delivered'||m.status==='early')?`<div class="acts">${btn('approve',k,'Approve and release')}${btn('dispute',k,'Dispute','warn')}${btn('auto',k,'Skip '+AUTO_HOURS+' hours (demo)','ghost')}</div>
+        <span class="note">Auto-release: if you do nothing, this is released ${AUTO_HOURS} hours after delivery.</span>`:''}
+      ${m.status==='disputed'?`<span class="note">Money stays frozen in escrow. SafePay reviews within 5 business days. Choose the outcome to simulate:</span><div class="acts">${btn('resolve-release',k,'Fixed: release to supplier')}${btn('resolve-refund',k,'Not fixed: refund buyer','ghost')}</div>`:''}
+      ${m.status==='released'&&m.auto?`<span class="note">Auto-released after ${AUTO_HOURS} hours with no buyer action.</span>`:''}
+    </div>`}).join('')}</div>`).join('');
+  return `<div class="card"><div class="row"><div><span class="lbl">Delta Retail Co. · operating account</span><div class="big">${egp(S.buyer)}</div></div>
+    <div><span class="lbl">Held in escrow</span><div class="big">${egp(S.escrow)}</div></div></div></div>`+create+list;
+}
+
+function supplierView(){
+  const mine=S.orders.filter(o=>o.supplier===ME);
+  const months=new Set(S.history.map(h=>h[0].split(' ')[1])).size;
+  const income=S.history.reduce((a,h)=>a+h[2],0);
+  const pct=Math.min(100,Math.round(months/6*100));
+  const list=mine.length?mine.map(o=>`<div class="card"><div class="row"><div><span class="lbl">${o.id} · from Delta Retail Co.</span><h3>${esc(o.desc)}</h3></div><span class="mono">${egp(o.amount)}</span></div>
+    <p class="muted">The buyer has already paid this order into escrow. You are paid once delivery is approved, or automatically ${AUTO_HOURS} hours after delivery if the buyer does nothing.</p>
+    ${o.ms.map((m,i)=>{const k=o.id+'-'+i;return `<div class="ms"><div class="row"><b>${m.name}</b><span class="mono">${egp(m.amount)}</span></div>${pill(m.status)}
+      ${m.status==='funded'?`<label class="fld" for="proof-${k}">Proof of delivery (photo or signed note)<input type="file" id="proof-${k}" accept="image/*,.pdf"></label><div class="acts">${btn('deliver',k,'Mark delivered')}</div>`:''}
+      ${m.status==='delivered'?`<div class="acts">${btn('early',k,'Get paid now: '+egp(advanceOf(m.amount)),'amber')}</div><span class="note">A licensed financing partner pays you today for a 1.5% fee (${egp(m.amount-advanceOf(m.amount))}) and is repaid from escrow when Delta approves. No collateral. SafePay does not lend its own money.</span>`:''}
+      ${m.status==='early'?`<span class="note">You received ${egp(m.advance)} early. Escrow will repay the financing partner on approval.</span>`:''}
+      ${m.status==='disputed'?`<span class="note">The buyer disputed this delivery. The money is frozen in escrow during review.</span>`:''}
+      ${m.status==='refunded'&&m.advance?`<span class="note">Refunded to the buyer. The early payout of ${egp(m.advance)} was returned to the financing partner.</span>`:''}
+    </div>`}).join('')}</div>`).join(''):`<div class="card"><p class="empty">No orders yet. Switch to Buyer company and create one for Al-Amal Packaging.</p></div>`;
+  return `<div class="card"><span class="lbl">Al-Amal Packaging · SafePay business wallet</span><div class="big" id="sup-wallet">${egp(S.wallets[ME])}</div>
+    <div class="row"><span class="muted">Verified payment record</span><span class="mono">${egp(income)}</span></div>
+    <span class="lbl" id="ready-lbl">Financing readiness</span>
+    <div class="meter" role="progressbar" aria-labelledby="ready-lbl" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><span style="width:${pct}%"></span></div>
+    <span class="note">${months} of 6 months of verified B2B income. Lending partners use this record to offer working-capital loans.</span></div>`+list+
+    `<div class="card"><span class="lbl">Payment history</span><div class="hist">${S.history.map(h=>`<div><span><span class="muted mono">${h[0]}</span> · ${esc(h[1])}</span><span class="mono">${h[2]<0?'− ':''}${egp(Math.abs(h[2]))}</span></div>`).join('')}</div></div>`;
+}
+
+function deliveryView(){
+  const D=S.D,t=dTotal();
+  const steps=[['Paid into escrow'],['Out for delivery'],[D.status==='returned'?'Returned · refunded':'Handed over · money released']];
+  const reached={cart:-1,paid:0,out:1,delivered:2,returned:2}[D.status];
+  const tl='<ul class="steps">'+steps.map((s,i)=>`<li class="${i<=reached?'':'muted'}">${i<=reached?'✓':'○'} ${s[0]}</li>`).join('')+'</ul>';
+  let cust='',cour='';
+  if(D.status==='cart'){
+    cust=`<div class="ms">${ITEMS.map(i=>`<div class="row"><span>${i[0]}</span><span class="mono">${egp(i[1])}</span></div>`).join('')}<div class="row"><b>Total</b><b class="mono">${egp(t)}</b></div></div>
+    <label class="fld" for="d-method">Pay with<select id="d-method">${METHODS.map(m=>`<option ${D.method===m?'selected':''}>${m}</option>`).join('')}</select></label>
+    ${D.err?`<span class="err" role="alert" id="d-err">${esc(D.err)}</span>`:''}
+    ${btn('d-pay','order','Pay '+egp(t)+' safely')}<span class="note">Your money is held in escrow. The shop is paid only after you receive the parcel.</span>`;
+    cour='<p class="empty">No parcel assigned yet.</p>';
+  } else if(D.status==='paid'){
+    cust=`${pill('funded')}<p class="muted">Your ${egp(t)} is held in escrow. Nile Crafts has been told to ship.</p>${tl}`;
+    cour=`<div class="row"><b>${D.id}</b><span class="pill funded">Prepaid · no cash to collect</span></div><span class="muted">Pick up from Nile Crafts, Zamalek. Deliver to Mona A., Dokki.</span>${btn('d-out','order','Picked up · start delivery')}`;
+  } else if(D.status==='out'){
+    cust=`${pill('out')}<p>Give this code to the courier only when you have the parcel and it looks right:</p><div class="big mono code" id="d-shown-code">${D.code}</div>${tl}`;
+    cour=`<div class="row"><b>${D.id}</b><span class="pill funded">Prepaid</span></div><label class="fld" for="d-code">Customer's handover code<input id="d-code" inputmode="numeric" autocomplete="off" maxlength="4" placeholder="4 digits" ${D.err?'aria-invalid="true" aria-describedby="d-err"':''}></label>
+      ${D.err?`<span class="err" role="alert" id="d-err">${esc(D.err)}</span>`:''}<div class="acts">${btn('d-hand','order','Confirm handover')}${btn('d-refuse','order','Customer refused parcel','warn')}</div>`;
+  } else if(D.status==='delivered'){
+    cust=`${pill('released')}<p class="muted">Delivered. Nile Crafts has been paid.</p>${tl}${btn('d-again','order','Place another order','ghost')}`;
+    cour=`<p class="empty">Delivery complete. No cash handled.</p>`;
+  } else {
+    cust=`${pill('refunded')}<p class="muted">${egp(t)} refunded in full to your ${D.method==='Card'?'card':D.method==='InstaPay'?'InstaPay account':'mobile wallet'}.</p>${tl}${btn('d-again','order','Place another order','ghost')}`;
+    cour=`<p class="empty">Parcel returned to the shop.</p>`;
+  }
+  return `<div class="card"><span class="lbl">Delivery orders · any shop, any courier</span><p class="muted">Replaces cash on delivery. The customer prepays into escrow, the courier never carries cash, and the shop is paid the moment the customer's code confirms the handover. A refused parcel is refunded in full.</p></div>
+  <div class="card"><span class="lbl">Nile Crafts · small online shop wallet</span><div class="big" id="shop-wallet">${egp(S.shop)}</div><span class="note">SafePay fee 1% on each released order. A one-person shop gets the same protection as a big retailer.</span></div>
+  <div class="form"><div class="card"><span class="lbl">Customer · Mona A. · balance ${egp(S.customer)}</span>${cust}</div><div class="card"><span class="lbl">Courier app</span>${cour}</div></div>`;
+}
+
+function hl(json){return json.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])).replace(/"([\w.]+)":/g,'<span class="k">"$1"</span>:').replace(/: "([^"]*)"/g,': <span class="s">"$1"</span>')}
+function apiView(){
+  const o=S.orders[0], d=S.draft;
+  const src=o?{supplier:o.supplier,amount:o.amount,ms:o.ms,desc:o.desc}:{supplier:d.supplier,amount:d.amount,ms:splitPlan(d.amount,d.split),desc:d.desc};
+  const body={buyer_id:'biz_delta_retail',payee_id:sup(src.supplier).biz,amount:src.amount,currency:'EGP',description:src.desc,funding:'instapay',
+    milestones:src.ms.map(m=>({name:m.name,amount:m.amount})),release_rule:'buyer_approval',auto_release_after_hours:AUTO_HOURS};
+  const req=`<span class="c"># ${o?'Request that created '+o.id:'Request for the order in the Buyer form (not funded yet)'}</span>\nPOST https://api.safepay.example/v1/escrows\nAuthorization: Bearer sk_test_••••\nContent-Type: application/json\n\n${hl(JSON.stringify(body,null,2))}`;
+  const events=S.events.length?S.events.map(e=>`<pre>${hl(JSON.stringify(e,null,2))}</pre>`).join(''):'<p class="empty">No webhook events yet. Create and fund an order in the Buyer view, or pay in Delivery checkout.</p>';
+  return `<div class="card"><span class="lbl">How a platform plugs SafePay in</span>
+    <p class="muted">Marketplaces, e-commerce sites, freelance platforms and procurement systems call one API to hold a payment. SafePay and its partner bank handle KYB, escrow, release, disputes and payout.</p><pre id="api-req">${req}</pre></div>
+    <div class="card"><span class="lbl">Webhook event types</span><div class="chips">${EVENT_TYPES.map(t=>`<code>${t}</code>`).join('')}</div></div>
+    <div class="card"><div class="row"><span class="lbl">Webhooks sent to the platform (live)</span><span class="note" id="ev-count">${S.events.length} event${S.events.length===1?'':'s'}</span></div><div id="events" style="display:flex;flex-direction:column;gap:10px">${events}</div></div>`;
+}
+
+/* ---------- Render ---------- */
+function render(){
+  const act=document.activeElement, keep=act&&act.id&&$('pane').contains(act)?act.id:null;
+  VIEWS.forEach(v=>$('t-'+v).setAttribute('aria-pressed',String(S.view===v)));
+  $('pane').innerHTML={buyer:buyerView,supplier:supplierView,delivery:deliveryView,api:apiView}[S.view]();
+  const dv=S.view==='delivery';
+  $('l-pay').textContent=dv?'Customer wallet':'Buyer account';
+  $('l-sel').textContent=dv?'Shop wallet':S.view==='supplier'?'Al-Amal wallet':'Supplier wallets';
+  const pay=dv?S.customer:S.buyer, e=dv?S.dEscrow:S.escrow, sel=dv?S.shop:S.view==='supplier'?S.wallets[ME]:walletSum();
+  const put=(id,n)=>{const el=$(id),t=egp(n);if(el.textContent&&el.textContent!==t&&el.dataset.view===S.view){el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump')}el.dataset.view=S.view;el.textContent=t};
+  put('v-pay',pay);put('v-esc',e);put('v-sel',sel);
+  $('n-esc').classList.toggle('active',e>0);$('n-sel').classList.toggle('active',sel>0);
+  put('v-fees',S.fees);put('v-partner',S.partner);
+  const tot=totalMoney();$('v-total').textContent=egp(tot);
+  $('v-check').textContent=tot===START_TOTAL?'✓ unchanged':'✗ mismatch';
+  $('log').innerHTML=S.log.length?S.log.map(l=>`<li><span class="mono muted">${l[0]}</span><span>${esc(l[1])}</span></li>`).join(''):'<li><span class="mono muted">—</span><span class="muted">No activity yet. Create an order to start.</span></li>';
+  if(keep){const el=$(keep);if(el)el.focus();else $('pane').focus()}
+}
+function find(key){const i=key.lastIndexOf('-');const o=S.orders.find(x=>x.id===key.slice(0,i));return [o,o.ms[+key.slice(i+1)]]}
+function credit(o,amt,label){S.wallets[o.supplier]+=amt;if(o.supplier===ME)S.history.unshift([today(),label,amt])}
+
+/* ---------- Actions ---------- */
+function release(o,m,how){
+  if(!['delivered','early','disputed'].includes(m.status))return;
+  S.escrow-=m.amount;
+  const who=how==='auto'?`${AUTO_HOURS} hours passed with no buyer action.`:how==='dispute'?'Dispute closed: the supplier fixed the delivery.':'Delta Retail approved';
+  if(m.advance){S.partner+=m.amount;
+    log(`${who}${how?'':' “'+m.name+'”.'} ${egp(m.amount)} released from escrow to repay the financing partner (its fee: ${egp(m.amount-m.advance)}).`)}
+  else{credit(o,m.amount,'Delta Retail Co.');
+    log(`${who}${how?'':' “'+m.name+'”.'} ${egp(m.amount)} released to ${sup(o.supplier).name}'s wallet and added to its payment record.`)}
+  m.status='released';m.auto=how==='auto';
+  ev('milestone.released',o.id,{milestone:m.name,amount:m.amount,reason:how==='auto'?'auto_release_72h':how==='dispute'?'dispute_resolved':'buyer_approval'});
+}
+const ACT={
+  create(){
+    const d=S.draft,amount=Math.floor(d.amount),fee=feeOf(amount),total=amount+fee;
+    if(!(amount>=MIN_ORDER)){S.formErr='Enter an amount of at least '+egp(MIN_ORDER)+'.';return}
+    if(total>S.buyer){S.formErr='Not enough in the operating account. You need '+egp(total)+' including the 1% fee.';return}
+    S.formErr='';d.amount=amount;
+    const id='esc_'+String(1000+S.orders.length+1);
+    const o={id,supplier:d.supplier,desc:d.desc.trim()||'Order',amount,ms:splitPlan(amount,d.split).map(m=>Object.assign(m,{status:'funded',advance:0,proof:'',auto:false}))};
+    S.orders.unshift(o);S.buyer-=total;S.escrow+=amount;S.fees+=fee;
+    log(`Delta Retail funded ${id}: ${egp(amount)} moved to escrow at the partner bank, plus ${egp(fee)} SafePay fee.`);
+    ev('escrow.funded',id,{amount,fee,payee_id:sup(o.supplier).biz});
+  },
+  deliver(k){const [o,m]=find(k);if(m.status!=='funded')return;
+    const f=$('proof-'+k);m.proof=f&&f.files&&f.files.length?f.files[0].name:'delivery note (demo)';m.status='delivered';
+    log(`${sup(o.supplier).name} marked “${m.name}” delivered with proof. Auto-release in ${AUTO_HOURS} hours if the buyer does nothing.`);
+    ev('milestone.delivered',o.id,{milestone:m.name,proof:m.proof})},
+  early(k){const [o,m]=find(k);if(m.status!=='delivered')return;
+    const adv=advanceOf(m.amount);if(adv>S.partner)return;
+    m.status='early';m.advance=adv;S.partner-=adv;credit(o,adv,'Early payout · Delta Retail Co.');
+    log(`Financing partner paid ${sup(o.supplier).name} ${egp(adv)} early (1.5% fee). It will be repaid from escrow on approval.`);
+    ev('payout.early',o.id,{milestone:m.name,amount:adv,fee:m.amount-adv})},
+  approve(k){const [o,m]=find(k);if(m.status==='delivered'||m.status==='early')release(o,m)},
+  auto(k){const [o,m]=find(k);if(m.status==='delivered'||m.status==='early')release(o,m,'auto')},
+  dispute(k){const [o,m]=find(k);if(m.status!=='delivered'&&m.status!=='early')return;m.status='disputed';
+    log(`Delta Retail disputed “${m.name}”. ${egp(m.amount)} frozen in escrow during review.`);ev('milestone.disputed',o.id,{milestone:m.name,amount:m.amount})},
+  'resolve-release'(k){const [o,m]=find(k);if(m.status==='disputed')release(o,m,'dispute')},
+  'resolve-refund'(k){const [o,m]=find(k);if(m.status!=='disputed')return;
+    S.escrow-=m.amount;S.buyer+=m.amount;m.status='refunded';
+    let extra='';
+    if(m.advance){S.wallets[o.supplier]-=m.advance;S.partner+=m.advance;if(o.supplier===ME)S.history.unshift([today(),'Early payout returned to financing partner',-m.advance]);
+      extra=` The early payout of ${egp(m.advance)} was returned to the financing partner from the supplier's wallet.`}
+    log(`Dispute closed in the buyer's favour. ${egp(m.amount)} refunded to Delta Retail.${extra}`);
+    ev('milestone.refunded',o.id,{milestone:m.name,amount:m.amount})},
+  'd-pay'(){const D=S.D,t=dTotal();if(D.status!=='cart')return;
+    if(t>S.customer){D.err='Not enough balance for this order. Restart the demo to top up.';return}
+    D.err='';S.customer-=t;S.dEscrow+=t;D.status='paid';
+    log(`Mona paid ${egp(t)} for ${D.id} by ${D.method}. Held in escrow. Nile Crafts told to ship.`);ev('order.paid',D.id,{amount:t,method:D.method.toLowerCase().replace(' ','_')})},
+  'd-out'(){const D=S.D;if(D.status!=='paid')return;D.status='out';
+    log(`Courier picked up ${D.id}. A 4-digit handover code was sent to the customer.`);ev('delivery.out_for_delivery',D.id)},
+  'd-hand'(){const D=S.D,t=dTotal();if(D.status!=='out')return;
+    const v=$('d-code').value.trim();
+    if(v!==D.code){D.err=/^\d{4}$/.test(v)?'Wrong code. The money stays in escrow. Ask the customer to check the code.':'Enter the 4-digit code from the customer.';
+      log(`Handover code rejected for ${D.id}. Money stays in escrow.`);return}
+    D.err='';const fee=feeOf(t);S.dEscrow-=t;S.shop+=t-fee;S.fees+=fee;D.status='delivered';
+    log(`Handover confirmed with the customer's code. ${egp(t-fee)} released to Nile Crafts (SafePay fee ${egp(fee)}).`);ev('delivery.confirmed',D.id,{amount:t-fee,fee})},
+  'd-refuse'(){const D=S.D,t=dTotal();if(D.status!=='out')return;
+    D.err='';S.dEscrow-=t;S.customer+=t;D.status='returned';
+    log(`Customer refused ${D.id} at the door. ${egp(t)} refunded to Mona in full. Parcel returned to the shop.`);ev('order.refunded',D.id,{amount:t,reason:'customer_refused'})},
+  'd-again'(){if(S.D.status==='delivered'||S.D.status==='returned')S.D=freshD()}
+};
+
+/* ---------- Wiring ---------- */
+$('pane').addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b||b.disabled)return;ACT[b.dataset.act](b.dataset.key);render();
+  const err=$('d-err')?$('d-code'):null;if(err)err.focus()});
+$('pane').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='d-code'){e.preventDefault();ACT['d-hand']();render();if($('d-code'))$('d-code').focus()}
+  if(e.key==='Enter'&&(e.target.id==='f-amt'||e.target.id==='f-desc')){e.preventDefault();ACT.create();render()}});
+$('pane').addEventListener('input',e=>{const t=e.target;
+  if(t.id==='f-amt'){const a=Math.max(0,Math.floor(+t.value||0));S.draft.amount=a;$('f-fee').textContent=egp(feeOf(a));$('f-total').textContent=egp(a+feeOf(a))}
+  if(t.id==='f-desc')S.draft.desc=t.value});
+$('pane').addEventListener('change',e=>{const t=e.target;
+  if(t.id==='f-sup')S.draft.supplier=t.value;
+  if(t.id==='f-split')S.draft.split=t.value;
+  if(t.id==='d-method')S.D.method=t.value});
+function enter(){const p=$('pane');p.classList.remove('enter');void p.offsetWidth;p.classList.add('enter')}
+$('pane').addEventListener('animationend',e=>{if(e.target.parentNode===$('pane')&&!e.target.nextElementSibling)$('pane').classList.remove('enter')});
+VIEWS.forEach(v=>$('t-'+v).addEventListener('click',()=>{const ch=S.view!==v;S.view=v;render();if(ch)enter()}));
+$('reset').addEventListener('click',()=>{fresh();render();enter()});
+
+const THEMES=['auto','light','dark'];let theme='auto';
+$('theme').addEventListener('click',()=>{theme=THEMES[(THEMES.indexOf(theme)+1)%3];
+  if(theme==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',theme);
+  $('theme').textContent='Theme: '+theme});
+
+fresh();render();enter();
+/* Read-only hook for automated tests */
+window.safepay={state:()=>JSON.parse(JSON.stringify(S)),total:totalMoney,startTotal:START_TOTAL};
+</script>
+</body>
+</html>
